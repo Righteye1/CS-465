@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Hawaii Adventure",
+    "location": "Honolulu",
+    "price": "$2,500",
+    "description": "Enjoy sun, surf, and culture!"
+  },
+  {
+    "title": "New York City Tour",
+    "location": "New York City",
+    "price": "$1,800",
+    "description": "Explore the Big Apple in style."
+  },
+  {
+    "title": "Alaska Cruise",
+    "location": "Juneau",
+    "price": "$3,200",
+    "description": "Experience breathtaking glaciers and wildlife."
+  }
+]
