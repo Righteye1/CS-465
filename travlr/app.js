@@ -1,26 +1,49 @@
+const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const exphbs = require('express-handlebars');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
+// Connect to MongoDB and load models
+require('./app_server/models/db');
+
+// Import routes
+const travelerRouter = require('./app_server/routes/travelerRoutes');
+
+// Initialize app
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-
+// View engine setup
 app.set('views', path.join(__dirname, 'app_server', 'views'));
-
-// Set up Handlebars
-app.engine('hbs', exphbs.engine({ extname: 'hbs', defaultLayout: 'main' }));
 app.set('view engine', 'hbs');
 
-// Serve static files
+// Middleware
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Use your routes
-const travelerRoutes = require('./app_server/routes/travelerRoutes');
-app.use('/', travelerRoutes);
+// Routes
+app.use('/', travelerRouter);
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
-    console.log(`Trips route available at: http://localhost:${PORT}/trips`);
+// Catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    next(createError(404));
 });
+
+// Error handler
+app.use(function (err, req, res, next) {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    res.status(err.status || 500);
+    res.render('error');
+});
+
+// Listen to port 3000 OUTSIDE the error handler
+app.listen(3000, () => {
+    console.log('Server is running at http://localhost:3000');
+});
+
+module.exports = app;

@@ -1,12 +1,11 @@
-const path = require('path');
-const fs = require('fs');
+const mongoose = require('mongoose');
+const Trip = mongoose.model('Trip');
 
-exports.trips = (req, res) => {
-    const dataPath = path.join(__dirname, '../../trips.json');
-    const trips = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-
-    res.render('trips', {
-        title: 'Available Trips',
-        trips: trips
-    });
+exports.trips = async (req, res) => {
+    try {
+        const trips = await Trip.find({});
+        res.json(trips); // For testing: returns all trips in JSON
+    } catch (err) {
+        res.status(500).send(err);
+    }
 };
