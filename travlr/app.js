@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const apiRouter = require('./app_api/routes/trips');
+
+
 
 // Connect to MongoDB and load models
 require('./app_server/models/db');
@@ -26,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', travelerRouter);
+app.use('/api', apiRouter);
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
