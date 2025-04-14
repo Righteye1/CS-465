@@ -1,0 +1,7 @@
+<form (ngSubmit)="addTrip()">
+  <input type="text" [(ngModel)]="newTrip.title" name="title" placeholder="Title" required />
+  <input type="text" [(ngModel)]="newTrip.location" name="location" placeholder="Location" required />
+  <input type="text" [(ngModel)]="newTrip.description" name="description" placeholder="Description" required />
+  <input type="number" [(ngModel)]="newTrip.price" name="price" placeholder="Price" required />
+  <button type="submit">Add Trip</button>
+</form>

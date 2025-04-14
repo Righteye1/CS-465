@@ -16,5 +16,12 @@
     "location": "Juneau",
     "price": "$3,200",
     "description": "Experience breathtaking glaciers and wildlife."
+  },
+  {
+    "title": "Beach Escape",
+    "price": 1000,
+    "description": "Relax and swim!",
+    "location": "Miami",
+    "_id": "1744613625880"
   }
 ]
