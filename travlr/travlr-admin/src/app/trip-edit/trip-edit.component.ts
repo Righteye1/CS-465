@@ -17,7 +17,7 @@ export class TripEditComponent {
   constructor(private tripService: TripDataService) {}
 
   updateTrip() {
-    this.tripService.updateTrip(this.trip).subscribe(() => {
+    this.tripService.updateTrip(this.trip._id!, this.trip).subscribe(() => {
       alert('Trip updated!');
       this.editing = false;
     });

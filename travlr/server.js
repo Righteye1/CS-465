@@ -1,7 +1,9 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const { generateToken, verifyToken } = require('./auth');
 
 const app = express();
 const PORT = 3000;
@@ -10,31 +12,46 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Path to trips.json
 const tripsPath = path.join(__dirname, 'trips.json');
-
-// Load trips from file
 let trips = [];
 if (fs.existsSync(tripsPath)) {
     const data = fs.readFileSync(tripsPath, 'utf8');
     trips = JSON.parse(data);
 }
 
-// GET all trips
+// Hardcoded admin user
+const adminUser = {
+    username: 'admin',
+    passwordHash: bcrypt.hashSync('admin123', 10)
+};
+
+// Login Route
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (username === adminUser.username && bcrypt.compareSync(password, adminUser.passwordHash)) {
+        const token = generateToken({ username });
+        return res.json({ token });
+    }
+
+    res.status(401).json({ message: 'Invalid credentials' });
+});
+
+// GET 
 app.get('/api/trips', (req, res) => {
     res.json(trips);
 });
 
-// POST a new trip
-app.post('/api/trips', (req, res) => {
+// POST
+app.post('/api/trips', verifyToken, (req, res) => {
     const newTrip = { ...req.body, _id: Date.now().toString() };
     trips.push(newTrip);
     fs.writeFileSync(tripsPath, JSON.stringify(trips, null, 2));
     res.status(201).json(newTrip);
 });
 
-// PUT update a trip
-app.put('/api/trips/:id', (req, res) => {
+// PUT
+app.put('/api/trips/:id', verifyToken, (req, res) => {
     const id = req.params.id;
     const index = trips.findIndex(t => t._id === id);
     if (index === -1) return res.status(404).json({ error: 'Trip not found' });
@@ -44,8 +61,8 @@ app.put('/api/trips/:id', (req, res) => {
     res.json(trips[index]);
 });
 
-// DELETE a trip
-app.delete('/api/trips/:id', (req, res) => {
+//  DELETE
+app.delete('/api/trips/:id', verifyToken, (req, res) => {
     const id = req.params.id;
     const filtered = trips.filter(t => t._id !== id);
     if (filtered.length === trips.length) return res.status(404).json({ error: 'Trip not found' });
@@ -55,7 +72,6 @@ app.delete('/api/trips/:id', (req, res) => {
     res.status(204).end();
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
